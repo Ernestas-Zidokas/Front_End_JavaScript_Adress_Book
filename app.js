@@ -17,7 +17,7 @@ window.addEventListener('load', (event)=>{
   if(data != null) {
     data = JSON.parse(data)
     usersArray = data;
-    document.querySelector('#users').appendChild(createList());
+    createList();
   }
 });
 
@@ -26,12 +26,10 @@ function createList() {
 
   usersArray.forEach((user, index)=>{
     let list = document.createElement('li');
-    console.log(1);
 
     let fieldName = document.createElement(user.isEdit ? 'input' : 'span');
     let fieldLastName = document.createElement(user.isEdit ? 'input' : 'span');
     let fieldPhone = document.createElement(user.isEdit ? 'input' : 'span');
-    console.log(2, fieldLastName);
 
     if(user.isEdit){
       fieldName.type= "text";
@@ -39,55 +37,56 @@ function createList() {
       fieldPhone.type= "number";
     }
 
-    // fieldName[user.isEdit ? 'value' : 'textContent'] = user.name;
-    if(user.isEdit){
-      fieldName.value = user.name;
-    } else {
-      fieldName.textContent = user.name;
-    }
+    fieldName[user.isEdit ? 'value' : 'textContent'] = user.name;
     list.appendChild(fieldName);
-    console.log(3);
 
     fieldLastName[user.isEdit ? 'value' : 'textContent'] = user.lastname;
     list.appendChild(fieldLastName);
 
-    // fieldPhone[user.isEdit ? 'value' : 'textContent'] = `Nr. ${user.phone}`;
+    fieldPhone[user.isEdit ? 'value' : 'textContent'] = user.phone;
     list.appendChild(fieldPhone);
 
-    console.log(4);
-
     let edditButton = document.createElement('button');
-    edditButton.textContent = 'Edit';
+    if(user.isEdit) {
+      edditButton.textContent ='Save';
+    } else {
+      edditButton.textContent ='Edit';
+    }
     edditButton.type = 'button';
     edditButton.id = 'edit';
-    console.log(5);
+
     edditButton.addEventListener('click', event => {
-      usersArray[index].isEdit = true;
+      if (usersArray[index].isEdit) {
+        usersArray[index].name = fieldName.value;
+        usersArray[index].lastname = fieldLastName.value;
+        usersArray[index].phone = fieldPhone.value;
+      }
+
+      usersArray[index].isEdit = !usersArray[index].isEdit;
+      clearList();
       createList();
       console.log(`${index} Edit`);
+      window.localStorage.setItem('users', JSON.stringify(usersArray));
     });
 
-    console.log(6);
     let deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
     deleteButton.type = 'button';
-    console.log(7);
+
     deleteButton.addEventListener('click', event => {
-      console.log('Delete');
-      usersArray[index].name = '';
-      usersArray[index].lastname = '';
-      usersArray[index].phone = '';
+      usersArray.splice(index, 1);
+      console.log(usersArray);
+      clearList();
+      createList();
+      window.localStorage.setItem('users', JSON.stringify(usersArray));
     });
-    console.log(8);
+
     list.appendChild(edditButton);
-    console.log(9);
     list.appendChild(deleteButton);
-    console.log(10, list);
     container.appendChild(list);
-    console.log(11);
   });
-  console.log(container);
-  return container;
+
+  return document.querySelector('#users').appendChild(container);
 };
 
 const userInput = selector =>{
