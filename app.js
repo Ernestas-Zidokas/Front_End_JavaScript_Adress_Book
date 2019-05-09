@@ -4,13 +4,35 @@ document.querySelector('#addAdress').addEventListener('click', event => {
   let name = userInput('#name');
   let lastname = userInput('#lastname');
   let phone = userInput('#phone');
-  let userObject = {name: name, lastname: lastname, phone: phone, isEdit: false};
+  let userObject = {name: name, lastname: lastname, phone: phone, isEdit: false, isFavourite: false};
   usersArray.push(userObject);
 
   clearList();
   document.querySelector('#users').appendChild(createList());
   window.localStorage.setItem('users', JSON.stringify(usersArray));
 });
+
+document.querySelector('#search').addEventListener('input', event => {
+  let userSearch = userInput('#search');
+  searchInput(userSearch);
+
+  document.querySelector('#search').addEventListener('keydown', event => {
+    let backspaceSearch = userInput('#search');
+    if(event.key == "Backspace"){
+      searchInput(backspaceSearch);
+    }
+  })
+})
+
+function searchInput(search) {
+  clearList();
+  let data = window.localStorage.getItem('users');
+  if(data != null) {
+    data = JSON.parse(data)
+  }
+  usersArray = data.filter((person, index) => person.name.toLowerCase().includes(search));
+  return createList();
+}
 
 window.addEventListener('load', (event)=>{
   let data = window.localStorage.getItem('users');
@@ -45,6 +67,18 @@ function createList() {
 
     fieldPhone[user.isEdit ? 'value' : 'textContent'] = user.phone;
     list.appendChild(fieldPhone);
+
+    let favouriteButton = document.createElement('button');
+    favouriteButton.textContent = usersArray[index].isFavourite ? '❤️' : '🖤';
+    favouriteButton.type = 'button';
+    favouriteButton.id = 'favourite';
+
+    favouriteButton.addEventListener('click', event => {
+      usersArray[index].isFavourite = !usersArray[index].isFavourite;
+      clearList();
+      createList();
+      window.localStorage.setItem('users', JSON.stringify(usersArray));
+    });
 
     let edditButton = document.createElement('button');
     if(user.isEdit) {
@@ -81,6 +115,7 @@ function createList() {
       window.localStorage.setItem('users', JSON.stringify(usersArray));
     });
 
+    list.appendChild(favouriteButton);
     list.appendChild(edditButton);
     list.appendChild(deleteButton);
     container.appendChild(list);
