@@ -2,11 +2,11 @@ span {
   margin: 10px;
 }
 
-#favourite {
+.favourite {
   border: none;
   background: inherit;
 }
 
-#favourite:focus {
+.favourite:focus {
   outline: none;
 }
