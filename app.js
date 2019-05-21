@@ -140,14 +140,8 @@ document.querySelector('#addAdress').addEventListener('click', event => {
       deleteChecked.type = 'button';
 
       deleteChecked.addEventListener('click', event => {
-        usersArray.forEach((user, index) => {
-          if(user.isChecked){
-            console.log(usersArray);
-            usersArray.splice(index, 1);
-            console.log(usersArray);
-          }
-        });
-
+        let notCheckedUsers = usersArray.filter(user => !user.isChecked);
+        usersArray = notCheckedUsers;
         clearList();
         createList();
         window.localStorage.setItem('users', JSON.stringify(usersArray));
